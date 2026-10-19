@@ -37,6 +37,7 @@ const uint32_t DRIVE_DURATION_MS = 10000;
 
 void setup() {
     Serial.begin(115200);
+    Serial.setTxTimeoutMs(0);  // don't stall when USB is connected but no monitor is open
     Serial.println("MDD32 Bot Distance Tuning");
 
     if (!bot.begin()) {

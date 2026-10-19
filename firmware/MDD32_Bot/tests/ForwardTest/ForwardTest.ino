@@ -26,6 +26,7 @@ uint32_t startMs = 0;
 
 void setup() {
     Serial.begin(115200);
+    Serial.setTxTimeoutMs(0);  // don't stall when USB is connected but no monitor is open
     Serial.println("MDD32 Bot Forward Test");
 
     if (!bot.begin()) {

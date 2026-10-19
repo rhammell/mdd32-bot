@@ -64,6 +64,7 @@ Phase nextPhase(Phase p) {
 
 void setup() {
     Serial.begin(115200);
+    Serial.setTxTimeoutMs(0);  // don't stall when USB is connected but no monitor is open
     Serial.println("MDD32 Bot Drive Cycle Test");
 
     if (!bot.begin()) {

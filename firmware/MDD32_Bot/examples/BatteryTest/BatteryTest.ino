@@ -15,6 +15,7 @@ static uint32_t lastUpdateMs = 0;
 void setup() {
   // Bring up serial and core board peripherals.
   Serial.begin(115200);
+  Serial.setTxTimeoutMs(0);  // don't stall when USB is connected but no monitor is open
   Serial.println("MDD32 Bot Battery Test");
 
   // Initialize the bot

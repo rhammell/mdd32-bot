@@ -37,6 +37,7 @@ MDD32_Bot bot;
 void setup() {
     // Initialize serial communication
     Serial.begin(115200);
+    Serial.setTxTimeoutMs(0);  // don't stall when USB is connected but no monitor is open
     Serial.println("MDD32 Bot Wheel Sync Tuning");
 
     // Initialize the bot
