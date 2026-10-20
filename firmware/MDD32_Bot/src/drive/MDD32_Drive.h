@@ -29,7 +29,7 @@ public:
     bool isMoving() const;
     DriveTelemetry getTelemetry() const;
 
-    // Feedforward characterization only (see tuning/1_FeedforwardTuning): drive
+    // Feedforward characterization only (see examples/Tuning/1_FeedforwardTuning): drive
     // both wheels at a fixed open-loop PWM (-255..255) with the PID, feedforward
     // and ramp all bypassed, refreshing RPM telemetry at the normal control
     // interval. Call repeatedly from loop() to log the steady RPM each PWM level

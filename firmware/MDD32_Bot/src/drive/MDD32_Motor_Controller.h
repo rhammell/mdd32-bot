@@ -31,7 +31,7 @@ public:
     void stop();   // Stops the motor; does NOT clear PID/encoder state - call reset() before reusing
     void reset();
 
-    // Feedforward characterization only (see tuning/1_FeedforwardTuning): refresh
+    // Feedforward characterization only (see examples/Tuning/1_FeedforwardTuning): refresh
     // the RPM measurement as usual but drive a fixed open-loop PWM, bypassing
     // the PID and feedforward entirely. Lets the steady RPM sustained by each
     // PWM level be logged to build the PID_FF table. Not used in normal driving.

@@ -23,12 +23,12 @@
 // Drive speed limits
 #define MAX_SPEED_CM_S          12.0f
 
-// Wheel-sync correction gain (tuned with tuning/3_WheelSyncTuning). Keeps the
+// Wheel-sync correction gain (tuned with examples/Tuning/3_WheelSyncTuning). Keeps the
 // left/right wheels balanced: matched counts when driving straight, and
 // equal-and-opposite counts when spinning in place.
 #define WHEEL_SYNC_KP           0.0f
 
-// Acceleration and deceleration (tuned with tuning/4_DistanceTuning)
+// Acceleration and deceleration (tuned with examples/Tuning/4_DistanceTuning)
 // MAX_ACCEL_RPM_S limits how fast the commanded RPM slews toward the target.
 // Set to 0 to disable ramping (commanded RPM jumps straight to target).
 // 250 RPM/s == Alvik's 5 RPM per 20ms control tick.
@@ -46,7 +46,7 @@
 #define ENCODER_PPR 3             // Pulses per revolution (pole pairs on the magnetic disc)
 #define ENCODER_TICKS_PER_REV (ENCODER_PPR * ENCODER_MODE * MOTOR_GEAR_RATIO)
 
-// PID speed controller gains (tuned with tuning/2_PIDTuning)
+// PID speed controller gains (tuned with examples/Tuning/2_PIDTuning)
 // With feedforward enabled, the feedforward term supplies the bulk of the
 // holding PWM, so the integral only has to trim the residual - keep KI low.
 #define PID_KP          6.0f
@@ -58,7 +58,7 @@
 #define PID_OUTPUT_MAX   255.0f
 #define DRIVE_UPDATE_INTERVAL_US  20000  // 20ms = 50Hz
 
-// Velocity feedforward (tuned with tuning/1_FeedforwardTuning)
+// Velocity feedforward (tuned with examples/Tuning/1_FeedforwardTuning)
 // Open-loop PWM required to hold a given wheel speed, measured from the
 // 1_FeedforwardTuning sweep data. Applied instantly from the target RPM so the
 // wheel reaches speed quickly instead of waiting for the integral to wind up;

@@ -91,8 +91,8 @@ The firmware lives in `firmware/MDD32_Bot/`, structured as an Arduino library wi
 | `src/definitions/` | Compile-time configuration: `pin_definitions.h` (wiring) and `robot_definitions.h` (tuning/behavior). |
 | `src/battery/` | `MDD32_Battery`: battery voltage and charger-status monitoring. |
 | `src/drive/` | Differential drive stack: `MDD32_Motor`, `MDD32_Encoder`, `MDD32_PID`, `MDD32_Motor_Controller`, and `MDD32_Drive`. |
-| `examples/` | Standalone feature demos: `BatteryTest`, `WifiTest`. |
-| `tuning/` | Calibration sketches, numbered in the order they should be run: `1_FeedforwardTuning`, `2_PIDTuning`, `3_WheelSyncTuning`, `4_DistanceTuning`. |
+| `examples/Basics/` | Standalone feature demos: `BatteryTest`, `WifiTest`. |
+| `examples/Tuning/` | Calibration sketches, numbered in the order they should be run: `1_FeedforwardTuning`, `2_PIDTuning`, `3_WheelSyncTuning`, `4_DistanceTuning`. |
 | `tests/` | Post-build verification sketches: `ForwardTest`, `DriftTest`, `DriveCycleTest`. |
 
 All sketches report over the Serial Monitor at 115200 baud.

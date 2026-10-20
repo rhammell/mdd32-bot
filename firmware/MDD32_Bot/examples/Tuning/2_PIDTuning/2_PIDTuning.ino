@@ -2,7 +2,7 @@
  * 2_PIDTuning - PID gain tuning for MDD32_Bot library
  *
  * Run this AFTER 1_FeedforwardTuning. The recommended order is: characterize the
- * velocity feedforward first (tuning/1_FeedforwardTuning), enable it, then tune
+ * velocity feedforward first (examples/Tuning/1_FeedforwardTuning), enable it, then tune
  * the PID on top of it here. With feedforward supplying the bulk of the holding
  * PWM, the PID only has to trim the small residual, so the gains (especially
  * KI) stay low and the loop is well behaved.
@@ -53,7 +53,7 @@
  *
  * 5. Sanity-check the tune at several speeds across your range (set
  *    DRIVE_SPEED_CM_S below), since the motor is nonlinear. When done,
- *    re-enable MAX_ACCEL_RPM_S (see tuning/4_DistanceTuning) for smooth launches.
+ *    re-enable MAX_ACCEL_RPM_S (see examples/Tuning/4_DistanceTuning) for smooth launches.
  */
 
 #include <MDD32_Bot.h>
