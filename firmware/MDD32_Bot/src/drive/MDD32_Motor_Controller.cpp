@@ -17,8 +17,17 @@ bool MDD32_Motor_Controller::begin(const MotorControllerConfig& config) {
 
     // Initialize PID speed controller with the shared, tuned gains
     pid.begin(PID_KP, PID_KI, PID_KD, PID_OUTPUT_MIN, PID_OUTPUT_MAX);
+    _ffEnabled = (PID_FEEDFORWARD_ENABLE != 0);
 
     return true;
+}
+
+void MDD32_Motor_Controller::setPIDGains(float kp, float ki, float kd) {
+    pid.setGains(kp, ki, kd);
+}
+
+void MDD32_Motor_Controller::setFeedforwardEnabled(bool enabled) {
+    _ffEnabled = enabled;
 }
 
 void MDD32_Motor_Controller::setRPM(float rpm) {
@@ -28,7 +37,10 @@ void MDD32_Motor_Controller::setRPM(float rpm) {
 }
 
 float MDD32_Motor_Controller::feedforward(float rpm) const {
-#if PID_FEEDFORWARD_ENABLE
+    if (!_ffEnabled || PID_FF_POINTS <= 0 || rpm == 0.0f) {
+        return 0.0f;
+    }
+
     // Interpolate the holding-PWM lookup table on |rpm|, clamping at the ends
     float mag = fabsf(rpm);
     float pwm;
@@ -49,10 +61,6 @@ float MDD32_Motor_Controller::feedforward(float rpm) const {
     }
     // Apply the target's direction (0 stays 0)
     return (rpm < 0.0f) ? -pwm : pwm;
-#else
-    (void)rpm;
-    return 0.0f;
-#endif
 }
 
 void MDD32_Motor_Controller::measureRPM(float dt) {

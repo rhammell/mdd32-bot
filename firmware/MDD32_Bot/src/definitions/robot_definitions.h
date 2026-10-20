@@ -6,6 +6,11 @@
  * calibration factors, and default settings. These values are
  * intrinsic to the robot and its algorithms, and are shared by
  * the subsystems that need them.
+ *
+ * The tuning constants below serve as the library-wide defaults loaded by
+ * bot.begin(). They can be overridden at runtime in any sketch via
+ * bot.drive.setPIDGains(), setFeedforwardEnabled(), setWheelSyncKP(), and
+ * setMaxAccel(), or updated here to change the defaults for all sketches.
  */
 
 #pragma once

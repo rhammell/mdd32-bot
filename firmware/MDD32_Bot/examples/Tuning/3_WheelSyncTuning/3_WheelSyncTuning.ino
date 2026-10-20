@@ -2,13 +2,20 @@
  * 3_WheelSyncTuning - Wheel-sync correction tuning for MDD32_Bot library
  *
  * Prerequisite: PID tuning must be completed first (see 2_PIDTuning).
- * Disable ramping so the bot runs at a constant RPM.
  *
  * Use this sketch to tune the single wheel-sync correction gain
- * (WHEEL_SYNC_KP) defined in robot_definitions.h. The same gain
- * balances both a straight (wheels together) and a spin (wheels
- * opposite), so this sketch can exercise either one. Set SPIN_MODE
- * below to pick which, then recompile and upload for each test.
+ * (TUNE_WHEEL_SYNC_KP below) with the bot on its tuning stand and USB
+ * connected (or on a clear floor runway if verifying real-world tracking).
+ * The same gain balances both a straight (wheels together) and a spin (wheels
+ * opposite), so this sketch can exercise either one. Set SPIN_MODE below to
+ * pick which, and adjust TUNE_WHEEL_SYNC_KP for each test run. setup()
+ * automatically disables ramping (setMaxAccel(0)) so the wheels run at a
+ * constant target RPM.
+ *
+ * Once you find a value you are happy with, either copy it into
+ * src/definitions/robot_definitions.h (WHEEL_SYNC_KP) to make it the
+ * library-wide default, or call bot.drive.setWheelSyncKP() in your own
+ * sketch's setup().
  *
  * Both modes monitor the balance "diff" between the wheels: for a
  * straight it is (L - R) and should stay near zero as the counts
@@ -16,9 +23,9 @@
  * as the counts grow equal-and-opposite. The diff is printed over
  * Serial at 10 Hz.
  *
- * If the diff drifts steadily in one direction, WHEEL_SYNC_KP is too
+ * If the diff drifts steadily in one direction, TUNE_WHEEL_SYNC_KP is too
  * low and the correction is not strong enough to keep the wheels
- * matched. If the diff oscillates rapidly around zero, WHEEL_SYNC_KP
+ * matched. If the diff oscillates rapidly around zero, TUNE_WHEEL_SYNC_KP
  * is too high and the correction is overcorrecting. A good result
  * is a diff that stays near zero with no sustained drift or
  * oscillation.
@@ -26,10 +33,10 @@
 
 #include <MDD32_Bot.h>
 
-// Tuning options: set SPIN_MODE to false to tune a straight, true to tune a
-// spin. DRIVE_SPEED_CM_S is the wheel speed used for either move.
-constexpr bool  SPIN_MODE       = false;
-constexpr float DRIVE_SPEED_CM_S = 6.0f;
+// --- Wheel-Sync Tuning Parameters (edit these for each test run) ---
+constexpr float TUNE_WHEEL_SYNC_KP = WHEEL_SYNC_KP;  // try e.g. 0.2, 0.5, 1.0
+constexpr bool  SPIN_MODE          = false;          // false = straight, true = spin
+constexpr float DRIVE_SPEED_CM_S   = 6.0f;
 
 // MDD32 Bot instance
 MDD32_Bot bot;
@@ -46,6 +53,13 @@ void setup() {
         while (1);
     }
     Serial.println("MDD32 Bot initialized successfully");
+
+    // Disable ramping for constant-RPM testing and apply the wheel-sync gain
+    bot.drive.setMaxAccel(0.0f);
+    bot.drive.setWheelSyncKP(TUNE_WHEEL_SYNC_KP);
+
+    Serial.print("Wheel Sync KP: ");
+    Serial.println(TUNE_WHEEL_SYNC_KP, 3);
     Serial.println(SPIN_MODE ? "Spin tuning, Diff = L + R" : "Straight tuning, Diff = L - R");
 
     // Start the move being tuned

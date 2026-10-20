@@ -30,7 +30,28 @@ bool MDD32_Drive::begin() {
     }
     Serial.println("[Drive] Right motor controller init OK");
 
+    _wheelSyncKP = WHEEL_SYNC_KP;
+    _maxAccelRpmS = MAX_ACCEL_RPM_S;
+
     return true;
+}
+
+void MDD32_Drive::setPIDGains(float kp, float ki, float kd) {
+    _leftController.setPIDGains(kp, ki, kd);
+    _rightController.setPIDGains(kp, ki, kd);
+}
+
+void MDD32_Drive::setFeedforwardEnabled(bool enabled) {
+    _leftController.setFeedforwardEnabled(enabled);
+    _rightController.setFeedforwardEnabled(enabled);
+}
+
+void MDD32_Drive::setWheelSyncKP(float kp) {
+    _wheelSyncKP = kp;
+}
+
+void MDD32_Drive::setMaxAccel(float rpmPerSec) {
+    _maxAccelRpmS = rpmPerSec;
 }
 
 bool MDD32_Drive::initController(MDD32_Motor_Controller& controller,
@@ -122,8 +143,8 @@ void MDD32_Drive::update() {
     _lastRightCount = rightCount;
 
     // Ramp the commanded RPM toward the target at the acceleration limit.
-    // MAX_ACCEL_RPM_S <= 0 disables ramping (snap straight to target).
-    float maxDelta = MAX_ACCEL_RPM_S * dt;
+    // _maxAccelRpmS <= 0 disables ramping (snap straight to target).
+    float maxDelta = _maxAccelRpmS * dt;
     if (maxDelta <= 0.0f) {
         _commandedRPM = _targetRPM;
     } else {
@@ -131,17 +152,17 @@ void MDD32_Drive::update() {
     }
 
     // Proportional wheel-sync correction, applied on top of the ramped command
-    // (not slewed by the ramp). WHEEL_SYNC_KP = 0 disables it. 
+    // (not slewed by the ramp). _wheelSyncKP = 0 disables it. 
     if (_mode == DriveMode::Spin) {
         // Spin: wheels run opposite, so counts should sum to 0 (+ = clockwise).
         float tickError = (float)(leftCount + rightCount);
-        float correction = WHEEL_SYNC_KP * tickError;
+        float correction = _wheelSyncKP * tickError;
         _leftController.setRPM(_commandedRPM - correction);
         _rightController.setRPM(-_commandedRPM - correction);
     } else {
         // Straight: wheels run together, so counts should stay matched (diff 0).
         float tickError = (float)(leftCount - rightCount);
-        float correction = WHEEL_SYNC_KP * tickError;
+        float correction = _wheelSyncKP * tickError;
         _leftController.setRPM(_commandedRPM - correction);
         _rightController.setRPM(_commandedRPM + correction);
     }

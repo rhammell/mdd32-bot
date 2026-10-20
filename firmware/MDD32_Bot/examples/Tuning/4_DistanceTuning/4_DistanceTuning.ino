@@ -1,39 +1,32 @@
 /*
- * 4_DistanceTuning - Distance and deceleration tuning for MDD32_Bot library
+ * 4_DistanceTuning - Acceleration and distance tuning for MDD32_Bot library
  *
  * Prerequisite: PID and wheel-sync tuning must be completed
  * first (see 2_PIDTuning, 3_WheelSyncTuning).
  *
- * Use this sketch to tune the deceleration profile for distance-
- * bounded moves. The relevant parameters are defined in
- * robot_definitions.h. Each change requires recompiling and
- * uploading.
+ * Adjust TUNE_MAX_ACCEL_RPM_S below (with the bot on its tuning stand or a
+ * clear floor runway) to tune the acceleration ramp rate without editing
+ * robot_definitions.h on every test run. Once you find a value you like, copy
+ * it into src/definitions/robot_definitions.h (MAX_ACCEL_RPM_S) to make it the
+ * library-wide default, or call bot.drive.setMaxAccel() in your own sketch's
+ * setup().
  *
- * The sketch commands a drive to a target distance, then monitors
- * how accurately the bot stops at the mark. After stopping, the
- * final distance is printed so overshoot can be measured.
- *
- * Key parameters to tune:
- *   DECEL_DISTANCE_CM  - How far before the target to begin
- *                        decelerating. Too short causes overshoot;
- *                        too long causes an unnecessarily slow
- *                        approach.
- *   MIN_SPEED_CM_S     - Minimum speed during deceleration. Too
- *                        low and the bot stalls before reaching
- *                        the target; too high and it arrives with
- *                        too much momentum.
- *   MAX_ACCEL_RPM_S    - Ramp rate for acceleration and
- *                        deceleration. Affects how quickly the bot
- *                        reaches cruising speed and how aggressively
- *                        it slows down.
+ * Key parameters:
+ *   TUNE_MAX_ACCEL_RPM_S - Ramp rate (RPM/s) for acceleration. Affects how
+ *                          smoothly and quickly the bot reaches cruising speed
+ *                          (0 disables ramping).
+ *   DECEL_DISTANCE_CM    - How far before the target to begin decelerating.
+ *   MIN_SPEED_CM_S       - Minimum speed during deceleration.
  */
 
 #include <MDD32_Bot.h>
 
 MDD32_Bot bot;
 
-const float DRIVE_SPEED_CM_S = 5.0f;
-const uint32_t DRIVE_DURATION_MS = 10000;
+// --- Ramp Tuning Parameters (edit these for each test run) ---
+const float    TUNE_MAX_ACCEL_RPM_S = MAX_ACCEL_RPM_S;  // RPM/s (0 = no ramp)
+const float    DRIVE_SPEED_CM_S     = 5.0f;
+const uint32_t DRIVE_DURATION_MS    = 10000;
 
 void setup() {
     Serial.begin(115200);
@@ -46,6 +39,11 @@ void setup() {
     }
 
     Serial.println("MDD32 Bot initialized successfully");
+
+    // Apply the ramp rate configured at the top of this sketch
+    bot.drive.setMaxAccel(TUNE_MAX_ACCEL_RPM_S);
+    Serial.print("Max Accel (RPM/s): ");
+    Serial.println(TUNE_MAX_ACCEL_RPM_S, 1);
 
     // Start driving forward
     bot.drive.straight(DRIVE_SPEED_CM_S);

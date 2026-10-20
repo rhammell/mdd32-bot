@@ -4,9 +4,9 @@
  * Run this BEFORE PID tuning. It measures your motors' open-loop map of
  * "PWM in -> steady RPM out", which is exactly the data the velocity
  * feedforward table (PID_FF_RPM / PID_FF_PWM in robot_definitions.h) needs.
- * Feedforward is a physical property of the motor + gearbox + wheel + load +
- * battery; it does NOT depend on the PID gains, so it is measured open-loop
- * here with the PID bypassed entirely.
+ * Feedforward is a physical property of the motor + gearbox + wheel + battery;
+ * it does NOT depend on the PID gains, so it is measured open-loop here with
+ * the PID bypassed entirely.
  *
  * What it does:
  *   Steps the raw motor PWM from PWM_START to PWM_MAX in PWM_STEP increments.
@@ -15,14 +15,18 @@
  *   prints a paste-ready PID_FF table.
  *
  * How to use it:
- *   1. Put the bot on the ground (or under representative load) with a
- *      well-charged battery - feedforward is load- and voltage-dependent.
+ *   1. Place the bot on its tuning stand (wheels elevated so they spin freely)
+ *      with a fully charged battery and the USB cable connected. Measuring on
+ *      the stand at full charge is intentional: it errs slightly on the low
+ *      side of the PWM needed on the floor, which avoids overshoot while
+ *      leaving only a small residual for the PID integral to trim.
  *   2. Compile, upload, open the Serial Monitor at 115200, and let the full
- *      sweep run without touching the bot. It drives forward the whole time.
+ *      sweep run (~40 seconds).
  *   3. Copy the printed PID_FF_RPM / PID_FF_PWM / PID_FF_POINTS block into
- *      robot_definitions.h. Thin the points if you like - the table is linearly
- *      interpolated, so ~5-6 well-spaced points across your speed range are
- *      plenty. Add extra points where the curve bends most (usually the top).
+ *      src/definitions/robot_definitions.h in your MDD32_Bot library folder.
+ *      Thin the points if you like - the table is linearly interpolated, so
+ *      ~5-6 well-spaced points across your speed range are plenty. Add extra
+ *      points where the curve bends most (usually the top).
  *   4. Set PID_FEEDFORWARD_ENABLE to 1, then move on to 2_PIDTuning.
  *
  * Notes:

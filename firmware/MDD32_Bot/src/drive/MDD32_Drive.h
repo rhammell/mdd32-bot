@@ -29,6 +29,14 @@ public:
     bool isMoving() const;
     DriveTelemetry getTelemetry() const;
 
+    // Runtime tuning overrides (initialized from robot_definitions.h defaults).
+    // Call after begin() to test or customize parameters without editing the
+    // library header.
+    void setPIDGains(float kp, float ki, float kd);
+    void setFeedforwardEnabled(bool enabled);
+    void setWheelSyncKP(float kp);
+    void setMaxAccel(float rpmPerSec);
+
     // Feedforward characterization only (see examples/Tuning/1_FeedforwardTuning): drive
     // both wheels at a fixed open-loop PWM (-255..255) with the PID, feedforward
     // and ramp all bypassed, refreshing RPM telemetry at the normal control
@@ -62,6 +70,8 @@ private:
     DriveMode _mode = DriveMode::Idle;
     float    _targetRPM = 0;
     float    _commandedRPM = 0;   // ramped value actually sent to the wheels
+    float    _wheelSyncKP = WHEEL_SYNC_KP;
+    float    _maxAccelRpmS = MAX_ACCEL_RPM_S;
     uint32_t _lastUpdateTime = 0;
 
     // Odometry: accumulated centerline distance plus the encoder counts from

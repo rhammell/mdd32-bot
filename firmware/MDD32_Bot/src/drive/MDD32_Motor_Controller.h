@@ -31,6 +31,11 @@ public:
     void stop();   // Stops the motor; does NOT clear PID/encoder state - call reset() before reusing
     void reset();
 
+    // Runtime tuning overrides (initialized from robot_definitions.h in begin())
+    void setPIDGains(float kp, float ki, float kd);
+    void setFeedforwardEnabled(bool enabled);
+    bool isFeedforwardEnabled() const { return _ffEnabled; }
+
     // Feedforward characterization only (see examples/Tuning/1_FeedforwardTuning): refresh
     // the RPM measurement as usual but drive a fixed open-loop PWM, bypassing
     // the PID and feedforward entirely. Lets the steady RPM sustained by each
@@ -56,6 +61,7 @@ private:
     MDD32_Motor   motor;
     MDD32_Encoder encoder;
     MDD32_PID     pid;
+    bool           _ffEnabled = true;
     float          _targetRPM = 0.0f;
     float          _currentRPM = 0.0f;
     float          _currentPWM = 0.0f;
