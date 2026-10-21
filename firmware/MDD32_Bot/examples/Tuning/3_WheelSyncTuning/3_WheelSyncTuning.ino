@@ -34,7 +34,9 @@
 #include <MDD32_Bot.h>
 
 // --- Wheel-Sync Tuning Parameters (edit these for each test run) ---
-constexpr float TUNE_WHEEL_SYNC_KP = WHEEL_SYNC_KP;  // try e.g. 0.2, 0.5, 1.0
+// RPM of correction per encoder tick of imbalance (~142 ticks per cm). Start
+// small (e.g. 0.05) and increase gradually; large values overcorrect quickly.
+constexpr float TUNE_WHEEL_SYNC_KP = WHEEL_SYNC_KP;
 constexpr bool  SPIN_MODE          = false;          // false = straight, true = spin
 constexpr float DRIVE_SPEED_CM_S   = 6.0f;
 

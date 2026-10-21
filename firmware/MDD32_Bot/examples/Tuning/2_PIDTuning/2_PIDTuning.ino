@@ -10,12 +10,18 @@
  * How this sketch works:
  *   - Place the bot on its tuning stand (wheels elevated so they spin freely)
  *     with the USB cable connected.
- *   - Adjust TUNE_KP, TUNE_KI, TUNE_KD, and USE_FEEDFORWARD right below and
- *     upload to test each change - no need to edit robot_definitions.h between
- *     runs.
+ *   - The sketch commands a constant speed and prints the measured RPM so you
+ *     can observe how the controller responds.
+ *   - Adjust TUNE_KP, TUNE_KI, TUNE_KD, and USE_FEEDFORWARD right below. They
+ *     start at the library defaults from robot_definitions.h. Each change
+ *     still requires recompiling and uploading, but no edits to
+ *     robot_definitions.h between runs.
  *   - setup() automatically disables ramping (setMaxAccel(0)) and wheel sync
  *     (setWheelSyncKP(0)) so the PID responds to a clean step input with no
  *     other control loops active.
+ *   - Leave RPM_FILTER_ALPHA at its normal value (do NOT zero it) - the RPM
+ *     filter is a passive part of the system the PID must be tuned against,
+ *     not a competing control loop.
  *   - Once you find gains you are happy with, either copy them into
  *     src/definitions/robot_definitions.h (PID_KP, PID_KI, PID_KD) to make them
  *     the library-wide defaults, or call bot.drive.setPIDGains() in your own
@@ -27,8 +33,8 @@
  *
  * --- Quick PID Tuning Guide ---
  *
- * 1. Set TUNE_KI = 0 and start with a small TUNE_KP (e.g. 2.0) below.
- *    Compile, upload, and open Serial Monitor.
+ * 1. To tune from scratch, set TUNE_KI = 0 and start with a small TUNE_KP
+ *    (e.g. 2.0) below. Compile, upload, and open Serial Monitor.
  *
  * 2. Watch how the reported RPM approaches the target.
  *    - Too slow to reach target: increase TUNE_KP.
@@ -58,10 +64,10 @@
 MDD32_Bot bot;
 
 // --- PID Tuning Parameters (edit these for each test run) ---
-const bool  USE_FEEDFORWARD = false;  // true = feedforward + PID, false = pure PID
-const float TUNE_KP         = 2.0f;   // default with feedforward: PID_KP (6.0f)
-const float TUNE_KI         = 0.0f;   // default with feedforward: PID_KI (4.0f)
-const float TUNE_KD         = 0.0f;   // default with feedforward: PID_KD (0.0f)
+const bool  USE_FEEDFORWARD = (PID_FEEDFORWARD_ENABLE != 0);  // false = pure PID
+const float TUNE_KP         = PID_KP;
+const float TUNE_KI         = PID_KI;
+const float TUNE_KD         = PID_KD;
 
 // Drive speed and target RPM
 // Clamp to MAX_SPEED_CM_S so the printed target matches the setpoint

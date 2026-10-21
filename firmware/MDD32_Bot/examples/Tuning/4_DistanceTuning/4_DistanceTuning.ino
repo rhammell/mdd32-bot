@@ -4,19 +4,23 @@
  * Prerequisite: PID and wheel-sync tuning must be completed
  * first (see 2_PIDTuning, 3_WheelSyncTuning).
  *
- * Adjust TUNE_MAX_ACCEL_RPM_S below (with the bot on its tuning stand or a
- * clear floor runway) to tune the acceleration ramp rate without editing
- * robot_definitions.h on every test run. Once you find a value you like, copy
- * it into src/definitions/robot_definitions.h (MAX_ACCEL_RPM_S) to make it the
+ * Run this on the floor with a clear runway: launch smoothness, wheel slip,
+ * and distance traveled only reflect real driving when the wheels carry the
+ * bot's weight. The bot drives for DRIVE_DURATION_MS (about 50 cm at the
+ * default 5 cm/s), which is short enough to stay tethered to USB for the
+ * Serial output - leave enough slack in the cable.
+ *
+ * Adjust TUNE_MAX_ACCEL_RPM_S below to tune the acceleration ramp rate (0
+ * disables ramping) without editing robot_definitions.h on every test run.
+ * Once you find a value you like, copy it into
+ * src/definitions/robot_definitions.h (MAX_ACCEL_RPM_S) to make it the
  * library-wide default, or call bot.drive.setMaxAccel() in your own sketch's
  * setup().
  *
- * Key parameters:
- *   TUNE_MAX_ACCEL_RPM_S - Ramp rate (RPM/s) for acceleration. Affects how
- *                          smoothly and quickly the bot reaches cruising speed
- *                          (0 disables ramping).
- *   DECEL_DISTANCE_CM    - How far before the target to begin decelerating.
- *   MIN_SPEED_CM_S       - Minimum speed during deceleration.
+ * Note: DECEL_DISTANCE_CM and MIN_SPEED_CM_S are defined in
+ * robot_definitions.h but not yet used by the library - distance-bounded
+ * moves with deceleration are not implemented, so stop() halts the motors
+ * immediately.
  */
 
 #include <MDD32_Bot.h>

@@ -75,6 +75,11 @@
 // |RPM| breakpoints (ascending) and the PWM needed to sustain each. Values
 // between points are interpolated; magnitudes beyond the ends are clamped. The
 // target's sign is applied to the result, and a target of 0 yields 0.
+// To start from scratch (no measured data yet), set PID_FEEDFORWARD_ENABLE to
+// 0 and use a single zero point, which yields 0 PWM at every speed:
+//   constexpr float PID_FF_RPM[]  = {0.0f};
+//   constexpr float PID_FF_PWM[]  = {0.0f};
+//   constexpr int   PID_FF_POINTS = 1;
 constexpr float PID_FF_RPM[]   = {0.0f, 15.0f, 29.0f, 38.0f, 47.0f, 57.0f};
 constexpr float PID_FF_PWM[]   = {0.0f, 42.0f, 55.0f, 66.0f, 86.0f, 120.0f};
 constexpr int   PID_FF_POINTS  = 6;

@@ -4,9 +4,9 @@
  * Run this BEFORE PID tuning. It measures your motors' open-loop map of
  * "PWM in -> steady RPM out", which is exactly the data the velocity
  * feedforward table (PID_FF_RPM / PID_FF_PWM in robot_definitions.h) needs.
- * Feedforward is a physical property of the motor + gearbox + wheel + battery;
- * it does NOT depend on the PID gains, so it is measured open-loop here with
- * the PID bypassed entirely.
+ * Feedforward is a physical property of the motor + gearbox + wheel + load +
+ * battery; it does NOT depend on the PID gains, so it is measured open-loop
+ * here with the PID bypassed entirely.
  *
  * What it does:
  *   Steps the raw motor PWM from PWM_START to PWM_MAX in PWM_STEP increments.
