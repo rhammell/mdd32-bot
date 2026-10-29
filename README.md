@@ -111,7 +111,9 @@ In the Arduino IDE, select **ESP32S3 Dev Module** and set:
 
 The ESP32-S3 is programmed over USB-C. If the port doesn't appear, hold **BOOT**, press and release **RESET**, then release **BOOT** to enter the bootloader.
 
-### Usage
+## Firmware API
+
+Include the library and create a single `MDD32_Bot` instance. It exposes two subsystems as public members: `battery` and `drive`.
 
 ```cpp
 #include <MDD32_Bot.h>
@@ -132,8 +134,53 @@ void loop() {
 }
 ```
 
-`MDD32_Bot` exposes two subsystems: `battery` (`voltage()`, `charging()`, `chargerConnected()`) and `drive` (`straight()`, `spin()`, `stop()`, `update()`, `isMoving()`, `getTelemetry()`, `getDistance()`, `resetDistance()`).
+### `MDD32_Bot`
+
+| Member | Description |
+| --- | --- |
+| `bool begin()` | Initializes the battery monitor and drive subsystems. Returns `false` if either fails. |
+| `battery` | `MDD32_Battery` instance (see below). |
+| `drive` | `MDD32_Drive` instance (see below). |
+
+### `MDD32_Battery`
+
+| Method | Description |
+| --- | --- |
+| `bool begin()` | Initializes battery voltage and charge-status monitoring. Called by `MDD32_Bot::begin()`. |
+| `float voltage()` | Battery voltage in volts. |
+| `bool charging()` | `true` while actively charging. |
+| `bool chargerConnected()` | `true` when a charging source is plugged in. |
+
+### `MDD32_Drive`
+
+Differential drive with per-wheel PID speed control, velocity feedforward, acceleration ramping, and wheel-sync correction. Call `update()` frequently from `loop()` to run the control loop.
+
+| Method | Description |
+| --- | --- |
+| `bool begin()` | Initializes the motor driver, both motor controllers, and encoders. Called by `MDD32_Bot::begin()`. |
+| `void straight(float speed_cm_s)` | Drives both wheels at the given speed (negative = reverse). Clamped to `MAX_SPEED_CM_S`. |
+| `void spin(float speed_cm_s)` | Spins in place, with the wheels at equal and opposite speeds. Positive spins clockwise. |
+| `void stop()` | Stops both motors immediately and goes idle. |
+| `void update()` | Runs the drive control loop; call as often as possible. |
+| `bool isMoving()` | `true` while a drive command is active. |
+| `DriveTelemetry getTelemetry()` | Returns current motor telemetry. |
+| `float getDistance()` | Returns cumulative straight-line distance, in cm, driven since power-on. Spins don't add to it. |
+| `void resetDistance()` | Resets the cumulative drive distance to zero. |
+
+`DriveTelemetry` contains: `leftRPM`, `leftPWM`, `rightRPM`, `rightPWM`, `leftCount`, and `rightCount` (wheel-output RPM, applied PWM, and raw encoder counts).
+
+#### Tuning overrides
+
+The control parameters default to the values in `src/definitions/robot_definitions.h`. These setters override them at runtime; call them after `bot.begin()`. The sketches in `examples/Tuning/` use them so you can tune without editing the library.
+
+| Method | Description |
+| --- | --- |
+| `void setPIDGains(float kp, float ki, float kd)` | Sets the PID gains for both wheels. Default: `PID_KP`, `PID_KI`, `PID_KD`. |
+| `void setFeedforwardEnabled(bool enabled)` | Turns velocity feedforward on or off. Default: `PID_FEEDFORWARD_ENABLE`. |
+| `void setWheelSyncKP(float kp)` | Sets the wheel-sync correction gain (0 disables it). Default: `WHEEL_SYNC_KP`. |
+| `void setMaxAccel(float rpmPerSec)` | Sets the acceleration ramp rate (0 disables ramping). Default: `MAX_ACCEL_RPM_S`. |
+| `void updateOpenLoop(int pwm)` | Drives both wheels at a fixed PWM (-255 to 255), bypassing PID, feedforward, and ramping. Used by `1_FeedforwardTuning`; not for normal driving. |
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project, including the firmware, PCB design files, and mechanical/3D-printed parts, is licensed under the [MIT License](LICENSE).
