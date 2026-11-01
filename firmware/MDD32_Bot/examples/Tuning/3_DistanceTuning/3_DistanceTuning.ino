@@ -1,8 +1,8 @@
 /*
- * 4_DistanceTuning - Acceleration and distance tuning for MDD32_Bot library
+ * 3_DistanceTuning - Acceleration and distance tuning for MDD32_Bot library
  *
  * Prerequisite: PID and wheel-sync tuning must be completed
- * first (see 2_PIDTuning, 3_WheelSyncTuning).
+ * first (see 1_PIDTuning, 2_WheelSyncTuning).
  *
  * Run this on the floor with a clear runway: launch smoothness, wheel slip,
  * and distance traveled only reflect real driving when the wheels carry the

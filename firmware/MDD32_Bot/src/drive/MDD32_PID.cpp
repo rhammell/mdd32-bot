@@ -28,7 +28,7 @@ void MDD32_PID::setSetpoint(float setpoint) {
     _setpoint = setpoint;
 }
 
-float MDD32_PID::compute(float measurement, float dt, float feedforward) {
+float MDD32_PID::compute(float measurement, float dt) {
     // Check if the time delta is valid (i.e. not zero)
     if (dt <= 0.0f) return 0.0f;
 
@@ -38,13 +38,11 @@ float MDD32_PID::compute(float measurement, float dt, float feedforward) {
     // Proportional term
     float pTerm = _kp * error;
 
-    // Integral term with anti-windup clamping. The clamp is taken against the
-    // output headroom the feedforward leaves behind, so the integral only trims
-    // the residual and cannot wind up into PWM the feedforward already provides.
+    // Integral term with anti-windup clamping, so the integral alone can never
+    // demand more than the full output range
     _integral += error * dt;
     if (_ki != 0.0f) {
-        _integral = constrain(_integral, (_outputMin - feedforward) / _ki,
-                                         (_outputMax - feedforward) / _ki);
+        _integral = constrain(_integral, _outputMin / _ki, _outputMax / _ki);
     }
     float iTerm = _ki * _integral;
 
@@ -52,8 +50,8 @@ float MDD32_PID::compute(float measurement, float dt, float feedforward) {
     float dTerm = _kd * (error - _prevError) / dt;
     _prevError = error;
 
-    // Sum feedforward with the PID terms and clamp output
-    float output = feedforward + pTerm + iTerm + dTerm;
+    // Sum the PID terms and clamp output
+    float output = pTerm + iTerm + dTerm;
     output = constrain(output, _outputMin, _outputMax);
 
     return output;

@@ -31,16 +31,8 @@ public:
     void stop();   // Stops the motor; does NOT clear PID/encoder state - call reset() before reusing
     void reset();
 
-    // Runtime tuning overrides (initialized from robot_definitions.h in begin())
+    // Runtime tuning override (initialized from robot_definitions.h in begin())
     void setPIDGains(float kp, float ki, float kd);
-    void setFeedforwardEnabled(bool enabled);
-    bool isFeedforwardEnabled() const { return _ffEnabled; }
-
-    // Feedforward characterization only (see examples/Tuning/1_FeedforwardTuning): refresh
-    // the RPM measurement as usual but drive a fixed open-loop PWM, bypassing
-    // the PID and feedforward entirely. Lets the steady RPM sustained by each
-    // PWM level be logged to build the PID_FF table. Not used in normal driving.
-    void updateOpenLoop(float dt, int pwm);
 
     // Telemetry accessors
     float   getRPM() const { return _currentRPM; }
@@ -48,21 +40,10 @@ public:
     int64_t getEncoderCount() const { return encoder.getCount(); }
 
 private:
-    // Read the encoder delta and update the filtered _currentRPM for this tick.
-    // Shared by update() (closed loop) and updateOpenLoop() (characterization).
-    void measureRPM(float dt);
-
-    // Open-loop feedforward PWM required to hold the given wheel speed, from the
-    // measured PID_FF lookup table (linearly interpolated, clamped at the ends,
-    // signed by rpm). Returns 0 when feedforward is disabled or rpm is 0.
-    float feedforward(float rpm) const;
-
     // Private members
     MDD32_Motor   motor;
     MDD32_Encoder encoder;
     MDD32_PID     pid;
-    bool           _ffEnabled = true;
-    float          _targetRPM = 0.0f;
     float          _currentRPM = 0.0f;
     float          _currentPWM = 0.0f;
     int64_t        _lastEncoderCount = 0;

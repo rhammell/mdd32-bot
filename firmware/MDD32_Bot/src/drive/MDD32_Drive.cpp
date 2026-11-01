@@ -41,11 +41,6 @@ void MDD32_Drive::setPIDGains(float kp, float ki, float kd) {
     _rightController.setPIDGains(kp, ki, kd);
 }
 
-void MDD32_Drive::setFeedforwardEnabled(bool enabled) {
-    _leftController.setFeedforwardEnabled(enabled);
-    _rightController.setFeedforwardEnabled(enabled);
-}
-
 void MDD32_Drive::setWheelSyncKP(float kp) {
     _wheelSyncKP = kp;
 }
@@ -170,20 +165,6 @@ void MDD32_Drive::update() {
     // Run the PID controllers to compute and apply PWM outputs
     _leftController.update(dt);
     _rightController.update(dt);
-}
-
-void MDD32_Drive::updateOpenLoop(int pwm) {
-    // Rate-limit to the normal control interval so each RPM sample integrates
-    // the same encoder window the closed-loop path uses.
-    uint32_t now = micros();
-    uint32_t elapsed = now - _lastUpdateTime;
-    if (elapsed < DRIVE_UPDATE_INTERVAL_US) return;
-    _lastUpdateTime = now;
-
-    // Drive both wheels at the same raw PWM, bypassing PID/feedforward/ramp
-    float dt = elapsed / 1e6f;
-    _leftController.updateOpenLoop(dt, pwm);
-    _rightController.updateOpenLoop(dt, pwm);
 }
 
 bool MDD32_Drive::isMoving() const {

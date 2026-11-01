@@ -33,16 +33,8 @@ public:
     // Call after begin() to test or customize parameters without editing the
     // library header.
     void setPIDGains(float kp, float ki, float kd);
-    void setFeedforwardEnabled(bool enabled);
     void setWheelSyncKP(float kp);
     void setMaxAccel(float rpmPerSec);
-
-    // Feedforward characterization only (see examples/Tuning/1_FeedforwardTuning): drive
-    // both wheels at a fixed open-loop PWM (-255..255) with the PID, feedforward
-    // and ramp all bypassed, refreshing RPM telemetry at the normal control
-    // interval. Call repeatedly from loop() to log the steady RPM each PWM level
-    // sustains, then read getTelemetry(). Not used in normal driving.
-    void updateOpenLoop(int pwm);
 
     // Cumulative straight-line distance, in cm, driven since power-on. Grows
     // for both forward and backward motion; pure in-place spins do not add to it.

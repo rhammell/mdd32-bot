@@ -1,21 +1,18 @@
 /*
- * 2_PIDTuning - PID gain tuning for MDD32_Bot library
+ * 1_PIDTuning - PID gain tuning for MDD32_Bot library
  *
- * Run this AFTER 1_FeedforwardTuning. The recommended order is: characterize the
- * velocity feedforward first (examples/Tuning/1_FeedforwardTuning), enable it,
- * then tune the PID on top of it here. With feedforward supplying the bulk of
- * the holding PWM, the PID only has to trim the small residual, so the gains
- * (especially KI) stay low and the loop is well behaved.
+ * Run this first. Each wheel has its own PID speed loop (shared gains), and
+ * the remaining tuning steps (wheel sync, acceleration) build on top of it.
  *
  * How this sketch works:
  *   - Place the bot on its tuning stand (wheels elevated so they spin freely)
  *     with the USB cable connected.
  *   - The sketch commands a constant speed and prints the measured RPM so you
  *     can observe how the controller responds.
- *   - Adjust TUNE_KP, TUNE_KI, TUNE_KD, and USE_FEEDFORWARD right below. They
- *     start at the library defaults from robot_definitions.h. Each change
- *     still requires recompiling and uploading, but no edits to
- *     robot_definitions.h between runs.
+ *   - Adjust TUNE_KP, TUNE_KI, and TUNE_KD right below. They start at the
+ *     library defaults from robot_definitions.h. Each change still requires
+ *     recompiling and uploading, but no edits to robot_definitions.h between
+ *     runs.
  *   - setup() automatically disables ramping (setMaxAccel(0)) and wheel sync
  *     (setWheelSyncKP(0)) so the PID responds to a clean step input with no
  *     other control loops active.
@@ -37,21 +34,20 @@
  *    (e.g. 2.0) below. Compile, upload, and open Serial Monitor.
  *
  * 2. Watch how the reported RPM approaches the target.
- *    - Too slow to reach target: increase TUNE_KP.
- *    - Oscillates around target or overshoots: decrease TUNE_KP.
- *    Repeat until RPM rises quickly without oscillating. A steady-state error
- *    (offset from target) is expected with KP alone.
- *    (With feedforward enabled the wheel starts near target, so the P
- *    response is small - that is expected.)
+ *    - Settles far below target: increase TUNE_KP.
+ *    - Overshoots and bounces at the start, or oscillates: decrease TUNE_KP.
+ *    With KP alone the wheel always settles below target (steady-state
+ *    error), and each increase gains less. Stop once the first bounce after
+ *    the start becomes large.
  *
- * 3. Add a small TUNE_KI (e.g. 1.0) to eliminate the steady-state error.
- *    - RPM still settles below target: increase TUNE_KI.
- *    - RPM overshoots then slowly settles, or oscillates: decrease TUNE_KI.
- *    With feedforward doing most of the work, KI can stay low - it only
- *    trims the residual the feedforward leaves behind.
+ * 3. Add TUNE_KI to remove the steady-state error. The integral builds up
+ *    the PWM each wheel needs to hold the target speed.
+ *    - Reaches target too slowly: increase TUNE_KI.
+ *    - Overshoots past the target or oscillates: decrease TUNE_KI, or lower
+ *      TUNE_KP to add damping.
  *
- * 4. Good result: RPM reaches and holds the target with no sustained
- *    oscillation and no visible overshoot.
+ * 4. Good result: RPM reaches and holds the target quickly, with no
+ *    sustained oscillation and little overshoot.
  *
  * 5. Sanity-check the tune at several speeds across your range (set
  *    DRIVE_SPEED_CM_S below), since the motor is nonlinear. When done, copy
@@ -64,21 +60,23 @@
 MDD32_Bot bot;
 
 // --- PID Tuning Parameters (edit these for each test run) ---
-const bool  USE_FEEDFORWARD = (PID_FEEDFORWARD_ENABLE != 0);  // false = pure PID
-const float TUNE_KP         = PID_KP;
-const float TUNE_KI         = PID_KI;
-const float TUNE_KD         = PID_KD;
+const float TUNE_KP = PID_KP;
+const float TUNE_KI = PID_KI;
+const float TUNE_KD = PID_KD;
 
 // Drive speed and target RPM
 // Clamp to MAX_SPEED_CM_S so the printed target matches the setpoint
 // straight() actually commands (it constrains speed to this limit)
-const float DRIVE_SPEED_CM_S = 8.0f;
+const float DRIVE_SPEED_CM_S = 12.0f;
 const float CLAMPED_SPEED_CM_S = constrain(DRIVE_SPEED_CM_S, -MAX_SPEED_CM_S, MAX_SPEED_CM_S);
 const float TARGET_RPM = (CLAMPED_SPEED_CM_S * 60.0f) / WHEEL_CIRCUMFERENCE_CM;
 
 // Plot mode
 // 0 = Serial Monitor, 1 = Serial Plotter
 const int   PLOT_MODE = 0;  
+
+// Time the drive command was issued; printed times are relative to this
+uint32_t driveStartMs = 0;
 
 void setup() {
     // Initialize serial communication
@@ -97,13 +95,10 @@ void setup() {
     // tuning parameters configured at the top of this sketch
     bot.drive.setMaxAccel(0.0f);
     bot.drive.setWheelSyncKP(0.0f);
-    bot.drive.setFeedforwardEnabled(USE_FEEDFORWARD);
     bot.drive.setPIDGains(TUNE_KP, TUNE_KI, TUNE_KD);
 
     // Print the active configuration and target RPM
-    Serial.print("Feedforward: ");
-    Serial.print(USE_FEEDFORWARD ? "ON" : "OFF");
-    Serial.print("  KP: ");
+    Serial.print("KP: ");
     Serial.print(TUNE_KP, 2);
     Serial.print("  KI: ");
     Serial.print(TUNE_KI, 2);
@@ -122,6 +117,7 @@ void setup() {
 
     // Drive forward at the target speed
     bot.drive.straight(DRIVE_SPEED_CM_S);
+    driveStartMs = millis();
 }
 
 void loop() {
@@ -146,7 +142,7 @@ void loop() {
         // Print the motor status in the serial monitor mode
         } else {
             Serial.print("T: ");
-            Serial.print(millis() / 1000.0, 1);
+            Serial.print((millis() - driveStartMs) / 1000.0, 1);
             Serial.print("s  Target: ");
             Serial.print(TARGET_RPM, 1);
             Serial.print("  L RPM: ");

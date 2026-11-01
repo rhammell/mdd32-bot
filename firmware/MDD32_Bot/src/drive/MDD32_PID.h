@@ -16,10 +16,7 @@ public:
     void setSetpoint(float setpoint);
 
     // Compute the PID output given the current measurement and time step.
-    // feedforward is an open-loop term (e.g. velocity feedforward PWM) added to
-    // the PID terms before clamping; the integral anti-windup accounts for it so
-    // the integral only trims what the feedforward does not already supply.
-    float compute(float measurement, float dt, float feedforward = 0.0f);
+    float compute(float measurement, float dt);
 
     void reset();
 

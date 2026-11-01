@@ -1,7 +1,7 @@
 /*
- * 3_WheelSyncTuning - Wheel-sync correction tuning for MDD32_Bot library
+ * 2_WheelSyncTuning - Wheel-sync correction tuning for MDD32_Bot library
  *
- * Prerequisite: PID tuning must be completed first (see 2_PIDTuning).
+ * Prerequisite: PID tuning must be completed first (see 1_PIDTuning).
  *
  * Use this sketch to tune the single wheel-sync correction gain
  * (TUNE_WHEEL_SYNC_KP below) with the bot on its tuning stand and USB

@@ -92,7 +92,7 @@ The firmware lives in `firmware/MDD32_Bot/`, structured as an Arduino library wi
 | `src/battery/` | `MDD32_Battery`: battery voltage and charger-status monitoring. |
 | `src/drive/` | Differential drive stack: `MDD32_Motor`, `MDD32_Encoder`, `MDD32_PID`, `MDD32_Motor_Controller`, and `MDD32_Drive`. |
 | `examples/Basics/` | Standalone feature demos: `BatteryTest`, `WifiTest`. |
-| `examples/Tuning/` | Calibration sketches, numbered in the order they should be run: `1_FeedforwardTuning`, `2_PIDTuning`, `3_WheelSyncTuning`, `4_DistanceTuning`. |
+| `examples/Tuning/` | Calibration sketches, numbered in the order they should be run: `1_PIDTuning`, `2_WheelSyncTuning`, `3_DistanceTuning`. |
 | `tests/` | Post-build verification sketches: `ForwardTest`, `DriftTest`, `DriveCycleTest`. |
 
 All sketches report over the Serial Monitor at 115200 baud.
@@ -153,7 +153,7 @@ void loop() {
 
 ### `MDD32_Drive`
 
-Differential drive with per-wheel PID speed control, velocity feedforward, acceleration ramping, and wheel-sync correction. Call `update()` frequently from `loop()` to run the control loop.
+Differential drive with per-wheel PID speed control, acceleration ramping, and wheel-sync correction. Call `update()` frequently from `loop()` to run the control loop.
 
 | Method | Description |
 | --- | --- |
@@ -176,11 +176,8 @@ The control parameters default to the values in `src/definitions/robot_definitio
 | Method | Description |
 | --- | --- |
 | `void setPIDGains(float kp, float ki, float kd)` | Sets the PID gains for both wheels. Default: `PID_KP`, `PID_KI`, `PID_KD`. |
-| `void setFeedforwardEnabled(bool enabled)` | Turns velocity feedforward on or off. Default: `PID_FEEDFORWARD_ENABLE`. |
 | `void setWheelSyncKP(float kp)` | Sets the wheel-sync correction gain (0 disables it). Default: `WHEEL_SYNC_KP`. |
 | `void setMaxAccel(float rpmPerSec)` | Sets the acceleration ramp rate (0 disables ramping). Default: `MAX_ACCEL_RPM_S`. |
-| `void updateOpenLoop(int pwm)` | Drives both wheels at a fixed PWM (-255 to 255), bypassing PID, feedforward, and ramping. Used by `1_FeedforwardTuning`; not for normal driving. |
-
 ## License
 
 This project, including the firmware, PCB design files, and mechanical/3D-printed parts, is licensed under the [MIT License](LICENSE).
