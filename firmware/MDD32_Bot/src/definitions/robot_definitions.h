@@ -26,7 +26,7 @@
 #define TICKS_PER_CM            (ENCODER_TICKS_PER_REV / WHEEL_CIRCUMFERENCE_CM)
 
 // Drive speed limits
-#define MAX_SPEED_CM_S          12.0f
+#define MAX_SPEED_CM_S          10.0f
 
 // Wheel-sync correction gain (tuned with examples/Tuning/2_WheelSyncTuning). Keeps the
 // left/right wheels balanced: matched counts when driving straight, and
