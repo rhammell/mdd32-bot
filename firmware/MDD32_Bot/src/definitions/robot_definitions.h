@@ -21,7 +21,7 @@
 #define VBAT_DIV_RATIO      2.0f
 
 // Wheel geometry
-#define WHEEL_DIAMETER_CM       4.05
+#define WHEEL_DIAMETER_CM       3.4
 #define WHEEL_CIRCUMFERENCE_CM  (M_PI * WHEEL_DIAMETER_CM)
 #define TICKS_PER_CM            (ENCODER_TICKS_PER_REV / WHEEL_CIRCUMFERENCE_CM)
 
