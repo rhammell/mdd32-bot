@@ -93,8 +93,6 @@ The firmware lives in `firmware/MDD32_Bot/`, structured as an Arduino library wi
 | `src/drive/` | Differential drive stack: `MDD32_Motor`, `MDD32_Encoder`, `MDD32_PID`, `MDD32_Motor_Controller`, and `MDD32_Drive`. |
 | `examples/Basics/` | Standalone feature demos: `BatteryTest`, `WifiTest`. |
 | `examples/Tuning/` | Calibration sketches, numbered in the order they should be run: `1_PIDTuning`, `2_WheelSyncTuning`, `3_DistanceTuning`. |
-| `tests/` | Post-build verification sketches: `ForwardTest`, `DriftTest`, `DriveCycleTest`. |
-
 All sketches report over the Serial Monitor at 115200 baud.
 
 ### Installing

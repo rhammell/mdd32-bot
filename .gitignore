@@ -31,6 +31,9 @@ fp-info-cache
 production/
 fabrication-toolkit-options.json
 
+# Local firmware test sketches
+firmware/MDD32_Bot/tests/
+
 # FreeCAD backups
 *.FCBak
 *.FCStd1
