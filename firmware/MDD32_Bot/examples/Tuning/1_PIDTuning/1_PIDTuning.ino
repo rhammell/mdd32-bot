@@ -67,7 +67,7 @@ const float TUNE_KD = PID_KD;
 // Drive speed and target RPM
 // Clamp to MAX_SPEED_CM_S so the printed target matches the setpoint
 // straight() actually commands (it constrains speed to this limit)
-const float DRIVE_SPEED_CM_S = 12.0f;
+const float DRIVE_SPEED_CM_S = 6.0f;
 const float CLAMPED_SPEED_CM_S = constrain(DRIVE_SPEED_CM_S, -MAX_SPEED_CM_S, MAX_SPEED_CM_S);
 const float TARGET_RPM = (CLAMPED_SPEED_CM_S * 60.0f) / WHEEL_CIRCUMFERENCE_CM;
 
