@@ -54,8 +54,8 @@
 // PID speed controller gains (tuned with examples/Tuning/1_PIDTuning)
 // The integral supplies the holding PWM each wheel needs, so it adapts to
 // differences between motors without any per-wheel calibration.
-#define PID_KP          6.0f
-#define PID_KI          4.0f
+#define PID_KP          4.0f
+#define PID_KI          22.0f
 #define PID_KD          0.0f  
 
 // PID output limits and loop rate
