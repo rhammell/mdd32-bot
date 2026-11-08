@@ -36,7 +36,7 @@
 // Acceleration and deceleration (tuned with examples/Tuning/3_DistanceTuning)
 // MAX_ACCEL_RPM_S limits how fast the commanded RPM slews toward the target.
 // Set to 0 to disable ramping (commanded RPM jumps straight to target).
-// 250 RPM/s == Alvik's 5 RPM per 20ms control tick.
+// 57 RPM/s ramps from rest to MAX_SPEED_CM_S (~56 RPM) in about 1 s.
 #define MAX_ACCEL_RPM_S         57.0f
 #define DECEL_DISTANCE_CM       3.0f
 #define MIN_SPEED_CM_S          0.5f
