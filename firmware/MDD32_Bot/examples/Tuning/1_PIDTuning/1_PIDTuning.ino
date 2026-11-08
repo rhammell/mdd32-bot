@@ -19,10 +19,21 @@
  *   - Leave RPM_FILTER_ALPHA at its normal value (do NOT zero it) - the RPM
  *     filter is a passive part of the system the PID must be tuned against,
  *     not a competing control loop.
- *   - Once you find gains you are happy with, either copy them into
- *     src/definitions/robot_definitions.h (PID_KP, PID_KI, PID_KD) to make them
- *     the library-wide defaults, or call bot.drive.setPIDGains() in your own
- *     sketch's setup().
+ *   - The goal is a set of gains that brings each wheel to the target RPM
+ *     within about 0.5 seconds and holds it there without oscillating.
+ *     During normal driving the ramp (MAX_ACCEL_RPM_S) takes about 1
+ *     second to reach full speed, and the wheel trails the ramp by roughly
+ *     the PID's own response time. A PID that settles in 0.5 seconds or less
+ *     keeps that lag small, so the bot reaches its target speed shortly
+ *     after the ramp ends.
+ *     Adjust TUNE_KP until the wheel responds quickly with only a small
+ *     initial overshoot, then adjust TUNE_KI until the remaining error
+ *     closes within the 0.5 second target without oscillation. See the
+ *     tuning guide below for the detailed steps.
+ *   - Final gains can be applied in one of two ways: copy them into
+ *     src/definitions/robot_definitions.h (PID_KP, PID_KI, PID_KD) to make
+ *     them the library-wide defaults, or pass them to
+ *     bot.drive.setPIDGains() in the setup() of an individual sketch.
  *
  * Output modes (set PLOT_MODE below):
  *   0 = Human-readable Serial Monitor output
@@ -33,21 +44,32 @@
  * 1. To tune from scratch, set TUNE_KI = 0 and start with a small TUNE_KP
  *    (e.g. 2.0) below. Compile, upload, and open Serial Monitor.
  *
- * 2. Watch how the reported RPM approaches the target.
- *    - Settles far below target: increase TUNE_KP.
+ * 2. Tune TUNE_KP for a fast initial response. Watch how the reported RPM
+ *    approaches the target.
+ *    - Rises slowly or settles far below target: increase TUNE_KP.
  *    - Overshoots and bounces at the start, or oscillates: decrease TUNE_KP.
  *    With KP alone the wheel always settles below target (steady-state
  *    error), and each increase gains less. Stop once the first bounce after
  *    the start becomes large.
  *
- * 3. Add TUNE_KI to remove the steady-state error. The integral builds up
- *    the PWM each wheel needs to hold the target speed.
- *    - Reaches target too slowly: increase TUNE_KI.
- *    - Overshoots past the target or oscillates: decrease TUNE_KI, or lower
- *      TUNE_KP to add damping.
+ * 3. Tune TUNE_KI to remove the steady-state error within about 0.5
+ *    seconds. The integral builds up the PWM each wheel needs to hold the
+ *    target speed. Use the printed time (T) to judge how long the wheel
+ *    takes to settle at the target.
+ *    - Takes longer than about 0.5 seconds to reach target: increase
+ *      TUNE_KI.
+ *    - Overshoots past the target or oscillates: first try increasing
+ *      TUNE_KP slightly to add damping; if that does not help, decrease
+ *      TUNE_KI.
+ *    A small overshoot here (about 5-10%) is acceptable, since the ramp
+ *    used in normal driving keeps the error small and reduces it further.
  *
- * 4. Good result: RPM reaches and holds the target quickly, with no
- *    sustained oscillation and little overshoot.
+ * 4. Good result: RPM reaches the target within about 0.5 seconds and
+ *    holds it, with little overshoot and no sustained oscillation. If the
+ *    printed PWM jitters noticeably once the speed has settled, TUNE_KP is
+ *    amplifying encoder noise and should be lowered. If the PWM sits at 255
+ *    while the wheel is speeding up, the motor is at its limit and higher
+ *    gains will not make it faster.
  *
  * 5. Sanity-check the tune at several speeds across your range (set
  *    DRIVE_SPEED_CM_S below), since the motor is nonlinear. When done, copy
